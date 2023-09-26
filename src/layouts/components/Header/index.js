@@ -19,10 +19,10 @@ import Button from '~/components/Button';
 import Menu from '~/components/Popper/Menu';
 import Image from '~/Image';
 import { InboxIcon, MessageIcon, UploadIcon } from '~/components/icons';
-import Search from '~/components/Layout/components/Search';
+import Search from '~/layouts/components/Search';
 import { Link } from 'react-router-dom';
 
-import routesConfig from '~/config/routes';
+import config from '~/config';
 const cx = classNames.bind(styles);
 const MENU_ITEMS = [
     {
@@ -95,7 +95,7 @@ function Header() {
     return (
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
-                <Link to={routesConfig.home} className={cx('logo-link')}>
+                <Link to={config.routes.home} className={cx('logo-link')}>
                     <img src={images.logo} alt="Tiktok" />
                 </Link>
 
