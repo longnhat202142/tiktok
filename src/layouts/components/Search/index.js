@@ -16,37 +16,39 @@ const cx = classNames.bind(styles);
 function Search() {
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-    const [showResult, setShowResult] = useState(true);
+    const [showResult, setShowResult] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const debounced = useDebounce(searchValue, 700);
+    const debouncedValue = useDebounce(searchValue, 500);
 
     const inputRef = useRef();
 
     useEffect(() => {
-        if (!debounced.trim()) {
+        if (!debouncedValue.trim()) {
             setSearchResult([]);
             return;
         }
 
         const fetchApi = async () => {
             setLoading(true);
-            const result = await searchServices.search(debounced);
+
+            const result = await searchServices.search(debouncedValue);
+
             setSearchResult(result);
             setLoading(false);
         };
 
         fetchApi();
-    }, [debounced]);
+    }, [debouncedValue]);
 
-    const handleHideResult = () => {
-        setShowResult(false);
-    };
-
-    const handClear = () => {
+    const handleClear = () => {
         setSearchValue('');
         setSearchResult([]);
         inputRef.current.focus();
+    };
+
+    const handleHideResult = () => {
+        setShowResult(false);
     };
 
     const handleChange = (e) => {
@@ -57,10 +59,13 @@ function Search() {
     };
 
     return (
+        // Using a wrapper <div> tag around the reference element solves
+        // this by creating a new parentNode context.
+
         <div>
             <HeadlessTippy
                 interactive
-                visible={searchResult.length > 0 && showResult}
+                visible={showResult && searchResult.length > 0}
                 render={(attrs) => (
                     <div className={cx('search-result')} tabIndex="-1" {...attrs}>
                         <PopperWrapper>
@@ -77,13 +82,13 @@ function Search() {
                     <input
                         ref={inputRef}
                         value={searchValue}
-                        placeholder="Search account and videos"
+                        placeholder="Search accounts and videos"
                         spellCheck={false}
                         onChange={handleChange}
                         onFocus={() => setShowResult(true)}
                     />
-                    {searchValue && !loading && (
-                        <button className={cx('clear')} onClick={handClear}>
+                    {!!searchValue && !loading && (
+                        <button className={cx('clear')} onClick={handleClear}>
                             <FontAwesomeIcon icon={faCircleXmark} />
                         </button>
                     )}
